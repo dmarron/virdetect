@@ -57,7 +57,7 @@ sh awk_column3_star.sh STAR_Aligned.out.sam > unaligned.sam
 sh awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam > unaligned_2.fastq
 STAR --genomeDir hg38_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
 java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
-rm -rfv $outdir/working/* # cleanup
+#remove intermediate files other than viralReadCounts.txt to clean up
 ```
 
 For mouse data the workflow is:
@@ -68,7 +68,7 @@ sh /home/dmarron/workspace/scripts/awk_unalignedfq_1.sh unaligned.sam > unaligne
 unaligned_2.fastq
 STAR --genomeDir mm10_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
 java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
-rm -rfv $outdir/working/* # cleanup
+#remove intermediate files other than viralReadCounts.txt to clean up
 ```
 
 Visualization
@@ -76,9 +76,10 @@ Visualization
 After running virdetect, it may be of interest to visualize coverage of specific
 viruses. To run the visualization, download makeRTable.java, plotTable.R,
 and the jar files from the virdetect github. The run the commands:
-java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:makeRTable virus_name
-STAR_virus.Aligned.out.bam viralRTable.txt
+```javascript
+java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:makeRTable virus_name STAR_virus.Aligned.out.bam viralRTable.txt
 Rscript plotTable.R viralRTable.txt
+```
 Those commands will plot the coverage of the virus strain given by the
 parameter virus_name.
 
@@ -89,12 +90,12 @@ the ones provided in virus_masked_hg38.fa and virus_masked_mm10.fa.
 To do so, download simulateReads.java, makeAlignedBed.java and
 maskGenome.java from the virdetect github. To mask your custom
 genome fa (custom_virus.fa) for human data, run the following commands:
+```javascript
 java simulateReads custom_virus.fa sim.fastq
-STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn sim.fastq
---outFilterMismatchNmax 5 --outFilterMultimapNmax 1080
---outFileNamePrefix STAR_ #cpus:16 mem:2
+STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn sim.fastq --outFilterMismatchNmax 5 --outFilterMultimapNmax 1080 --outFileNamePrefix STAR_
 java makeAlignedBed STAR_Aligned.out.sam aligned.bed
 java maskGenome custom_virus.fa aligned.bed custom_masked_virus.fa
+```
 The resulting file, custom_masked_virus.fa, contains the masked genome
 that can then be indexed with STAR (with command from section 2) and
 used with virdetect.
