@@ -50,25 +50,13 @@ Run workflow with command line
 After the genomes are indexed with STAR, the virdetect workflow is ready
 to be run. To run virdetect from the command line, download all java files,
 sh files, and jar files from the virdetect github. Then, run the following command line steps.
-If a line has cpus:x and mem:y as a comment, that indicates to submit that job with x threads and y
-gigs of memory requested.
 For human data the workflow is:
 ```javascript
-STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat --outFilterMultimapNmax 1000 --outSAMunmapped Within --outFileNamePrefix <output_dir>/STAR_ #cpus:16 mem:2
-sh awk_column3_star.sh <output_dir>/STAR_Aligned.out.sam > <output_dir>/unaligned.sam
-sh awk_unalignedfq_1.sh
-<output_dir>/unaligned.sam > <output_dir>/unaligned_1.fastq && sh
-awk_unalignedfq_2.sh <output_dir>/unaligned.sam >
-<output_dir>/unaligned_2.fastq
-STAR --genomeDir hg38_virus_dir --readFilesIn
-<output_dir>/unaligned_1.fastq <output_dir>/unaligned_2.fastq
---runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000
---limitOutSAMoneReadBytes 1000000 --outFileNamePrefix
-<output_dir>/STAR_virus_ # cpus:16 mem:2
-java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments
-<sample_name> <output_dir>/STAR_virus_Aligned.out.sam
-<output_dir>/viralReadCounts.txt #mem:8
-ls -l <output_dir> > <output_dir>/fileSizes.txt
+STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat --outFilterMultimapNmax 1000 --outSAMunmapped Within --outFileNamePrefix STAR_ #16 cpus, 32G memory
+sh awk_column3_star.sh STAR_Aligned.out.sam > unaligned.sam
+sh awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam > unaligned_2.fastq
+STAR --genomeDir hg38_virus_dir --readsisIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32G memory
+java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8G memory
 rm -rfv $outdir/working/* # cleanup
 ```
 
@@ -92,7 +80,6 @@ STAR --genomeDir mm10_virus_dir --readFilesIn
 java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments
 $sample_name <output_dir>/STAR_virus_Aligned.out.sam
 <output_dir>/viralReadCounts.txt #mem:8
-ls -l <output_dir> > <output_dir>fileSizes.txt
 rm -rfv $outdir/working/* # cleanup
 ```
 
