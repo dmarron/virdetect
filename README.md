@@ -52,34 +52,22 @@ to be run. To run virdetect from the command line, download all java files,
 sh files, and jar files from the virdetect github. Then, run the following command line steps.
 For human data the workflow is:
 ```javascript
-STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat --outFilterMultimapNmax 1000 --outSAMunmapped Within --outFileNamePrefix STAR_ #16 cpus, 32G memory
+STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat --outFilterMultimapNmax 1000 --outSAMunmapped Within --outFileNamePrefix STAR_ #16 cpus, 32 G memory
 sh awk_column3_star.sh STAR_Aligned.out.sam > unaligned.sam
 sh awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam > unaligned_2.fastq
-STAR --genomeDir hg38_virus_dir --readsisIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32G memory
-java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8G memory
+STAR --genomeDir hg38_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
+java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
 rm -rfv $outdir/working/* # cleanup
 ```
 
 For mouse data the workflow is:
 ```javascript
-STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn
-<input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat
---outFilterMultimapNmax 1000 --outSAMunmapped Within
---outFileNamePrefix <output_dir>/STAR_ #cpus:16 mem:2
-sh awk_column3_star.sh <output_dir>/STAR_Aligned.out.sam >
-<output_dir>/unaligned.sam
-sh /home/dmarron/workspace/scripts/awk_unalignedfq_1.sh
-<output_dir>/unaligned.sam > <output_dir>/unaligned_1.fastq && sh
-awk_unalignedfq_2.sh <output_dir>/unaligned.sam >
-<output_dir>/unaligned_2.fastq
-STAR --genomeDir mm10_virus_dir --readFilesIn
-<output_dir>/unaligned_1.fastq <output_dir>/unaligned_2.fastq
---runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000
---limitOutSAMoneReadBytes 1000000 --outFileNamePrefix
-<output_dir>/STAR_virus_ # cpus:16 mem:2
-java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments
-$sample_name <output_dir>/STAR_virus_Aligned.out.sam
-<output_dir>/viralReadCounts.txt #mem:8
+STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat --outFilterMultimapNmax 1000 --outSAMunmapped Within --outFileNamePrefix <output_dir>/STAR_ #16 cpus, 32 G memory
+sh awk_column3_star.sh <output_dir>/STAR_Aligned.out.sam > unaligned.sam
+sh /home/dmarron/workspace/scripts/awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam >
+unaligned_2.fastq
+STAR --genomeDir mm10_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
+java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
 rm -rfv $outdir/working/* # cleanup
 ```
 
