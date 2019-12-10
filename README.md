@@ -5,11 +5,12 @@ Contents
 1. Getting started
 2. Index genomes with STAR
 3. Run workflow with command line
-4. Run workflow with cwl
-5. Visualization
-6. Masking custom genomes
+4. Visualization
+5. Masking custom genomes
+6. BLAST
 
-1. Getting Started
+Getting Started
+
 The files needed for the virdetect workflow can be downloaded from
 GitHub at https://github.com/dmarron/virdetect
 The workflow can be run as several command line steps
@@ -20,7 +21,9 @@ hg38_noEBV.fa and virus_masked_hg38.fa from the virdetect gitHub. For
 mouse data, download mm10.fa from UCSC or ensembl and download
 virus_masked_mm10.fa from the virdetect github. For the commands to
 index this genomes with STAR, see Section 2.
-2. Index Genomes with STAR
+
+Index Genomes with STAR
+
 To index the genome .fa files, download the STAR aligner and the
 necessary files for the human and mouse workflows.
 For human data, download hg38_noEBV.fa and a hg38 gtf file (Example -
@@ -43,7 +46,9 @@ mm10.fa --sjdbGTFfile mm10_gtf.gtf
 STAR --runThreadN 1 --runMode genomeGenerate
 --genomeSAindexNbases 7 --genomeDir mm10_virus_dir
 --genomeFastaFiles virus_masked_mm10.fa
-3. Run workflow with command line
+
+Run workflow with command line
+
 After the genomes are indexed with STAR, the virdetect workflow is ready
 to be run. To run virdetect from the command line, download all java files,
 sh files, and jar files from the virdetect github. Then, run the following command line steps.
@@ -91,7 +96,9 @@ $sample_name <output_dir>/STAR_virus_Aligned.out.sam
 <output_dir>/viralReadCounts.txt #mem:8
 ls -l <output_dir> > <output_dir>fileSizes.txt
 rm -rfv $outdir/working/* # cleanup
-5. Visualization
+
+Visualization
+
 After running virdetect, it may be of interest to visualize coverage of specific
 viruses. To run the visualization, download makeRTable.java, plotTable.R,
 and the jar files from the virdetect github. The run the commands:
@@ -100,7 +107,9 @@ STAR_virus.Aligned.out.bam viralRTable.txt
 Rscript plotTable.R viralRTable.txt
 Those commands will plot the coverage of the virus strain given by the
 parameter virus_name.
-6. Masking custom genomes
+
+Masking custom genomes
+
 It may be of interest to run virdetect with custom virus strains rather than
 the ones provided in virus_masked_hg38.fa and virus_masked_mm10.fa.
 To do so, download simulateReads.java, makeAlignedBed.java and
@@ -115,3 +124,6 @@ java maskGenome custom_virus.fa aligned.bed custom_masked_virus.fa
 The resulting file, custom_masked_virus.fa, contains the masked genome
 that can then be indexed with STAR (with command from section 2) and
 used with virdetect.
+
+BLAST
+
