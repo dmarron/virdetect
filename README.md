@@ -12,12 +12,12 @@ Contents
 Getting Started
 
 The files needed for the virdetect workflow can be downloaded from
-GitHub at https://github.com/dmarron/virdetect
+GitHub at https://github.com/dmarron/virdetect.
 The workflow can be run as several command line steps
 Before the workflow can be run, the appropriate genome files (.fa) will need
 to be downloaded and then indexed with the STAR aligner
 (https://github.com/alexdobin/STAR). For human data, download
-hg38_noEBV.fa and virus_masked_hg38.fa from the virdetect gitHub. For
+hg38_noEBV.fa and virus_masked_hg38.fa from the virdetect github. For
 mouse data, download mm10.fa from UCSC or ensembl and download
 virus_masked_mm10.fa from the virdetect github. For the commands to
 index this genomes with STAR, see Section 2.
@@ -35,7 +35,7 @@ genomes:
 
 For human data:
 ```javascript
-STAR --runThreadN 8 --genomeChrBinNbits 14 --runMode genomeGenerate --genomeDir hg38_star_dir --genomeFastaFiles hg38.fa --sjdbGTFfile hg38_gtf.gtf
+STAR --runThreadN 8 --genomeChrBinNbits 14 --runMode genomeGenerate --genomeDir hg38_star_dir --genomeFastaFiles hg38_noEBV.fa --sjdbGTFfile hg38_gtf.gtf
 STAR --runThreadN 1 --runMode genomeGenerate --genomeSAindexNbases 7 --genomeDir hg38_virus_dir --genomeFastaFiles virus_masked_hg38.fa
 ```
 
@@ -57,7 +57,7 @@ sh awk_column3_star.sh STAR_Aligned.out.sam > unaligned.sam
 sh awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam > unaligned_2.fastq
 STAR --genomeDir hg38_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
 java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
-#remove intermediate files other than viralReadCounts.txt to clean up
+#remove intermediate files other than viralReadCounts.txt and STAR_virus_Aligned.out.sam to clean up
 ```
 
 For mouse data the workflow is:
@@ -68,7 +68,7 @@ sh /home/dmarron/workspace/scripts/awk_unalignedfq_1.sh unaligned.sam > unaligne
 unaligned_2.fastq
 STAR --genomeDir mm10_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
 java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
-#remove intermediate files other than viralReadCounts.txt to clean up
+#remove intermediate files other than viralReadCounts.txt and STAR_virus_Aligned.out.sam to clean up
 ```
 
 Visualization
@@ -101,4 +101,8 @@ that can then be indexed with STAR (with command from section 2) and
 used with virdetect.
 
 BLAST
-
+After the virdetect workflow is complete, it is possible to run BLAST on a representative subset of the virus reads.  The following script will select up to four reads from each virus strain that are aligned to different places and run BLAST on each one of them.  To do this, download and install BLAST from ncbi, then run the following commands:
+```javascript
+java -Xmx8G -cp picard-1.92.jar:sam-1.92.jar:printBlastViralReads STAR_virus_Aligned.out.sam <output_dir> > blast_commands.sh
+sh blast_commands.sh
+```
