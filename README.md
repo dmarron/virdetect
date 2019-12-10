@@ -1,6 +1,6 @@
-Virdetect
+# Virdetect
 
-Contents
+## Contents
 
 1. Getting started
 2. Index genomes with STAR
@@ -9,7 +9,7 @@ Contents
 5. Masking custom genomes
 6. BLAST
 
-Getting Started
+## Getting Started
 
 The files needed for the virdetect workflow can be downloaded from
 GitHub at https://github.com/dmarron/virdetect.
@@ -22,7 +22,7 @@ mouse data, download mm10.fa from UCSC or ensembl and download
 virus_masked_mm10.fa from the virdetect github. For the commands to
 index this genomes with STAR, see Section 2.
 
-Index Genomes with STAR
+## Index Genomes with STAR
 
 To index the genome .fa files, download the STAR aligner and the
 necessary files for the human and mouse workflows.
@@ -50,7 +50,8 @@ Run workflow with command line
 After the genomes are indexed with STAR, the virdetect workflow is ready
 to be run. To run virdetect from the command line, download all java files,
 sh files, and jar files from the virdetect github. Then, run the following command line steps.
-For human data the workflow is:
+
+### For human data the workflow is:
 ```javascript
 STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat --outFilterMultimapNmax 1000 --outSAMunmapped Within --outFileNamePrefix STAR_ #16 cpus, 32 G memory
 sh awk_column3_star.sh STAR_Aligned.out.sam > unaligned.sam
@@ -60,7 +61,7 @@ java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_na
 #remove intermediate files other than viralReadCounts.txt and STAR_virus_Aligned.out.sam to clean up
 ```
 
-For mouse data the workflow is:
+### For mouse data the workflow is:
 ```javascript
 STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat --outFilterMultimapNmax 1000 --outSAMunmapped Within --outFileNamePrefix <output_dir>/STAR_ #16 cpus, 32 G memory
 sh awk_column3_star.sh <output_dir>/STAR_Aligned.out.sam > unaligned.sam
@@ -71,7 +72,7 @@ java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_na
 #remove intermediate files other than viralReadCounts.txt and STAR_virus_Aligned.out.sam to clean up
 ```
 
-Visualization
+## Visualization
 
 After running virdetect, it may be of interest to visualize coverage of specific
 viruses. To run the visualization, download makeRTable.java, plotTable.R,
@@ -83,7 +84,7 @@ Rscript plotTable.R viralRTable.txt
 Those commands will plot the coverage of the virus strain given by the
 parameter virus_name.
 
-Masking custom genomes
+## Masking custom genomes
 
 It may be of interest to run virdetect with custom virus strains rather than
 the ones provided in virus_masked_hg38.fa and virus_masked_mm10.fa.
@@ -100,7 +101,7 @@ The resulting file, custom_masked_virus.fa, contains the masked genome
 that can then be indexed with STAR (with command from section 2) and
 used with virdetect.
 
-BLAST
+## BLAST
 
 After the virdetect workflow is complete, it is possible to run BLAST on a representative subset of the virus reads.  The following script will select up to four reads from each virus strain that are aligned to different places and run BLAST on each one of them.  To do this, download and install BLAST from ncbi, then run the following commands:
 ```javascript
