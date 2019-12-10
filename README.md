@@ -1,6 +1,6 @@
-#Virdetect
+Virdetect
 
-##Contents
+Contents
 
 1. Getting started
 2. Index genomes with STAR
