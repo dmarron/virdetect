@@ -32,20 +32,18 @@ For mouse data, download mm10.fa and a mm10 gtf file (Example -
 ftp://ftp.ensembl.org/pub/release-89/gtf/mus_musculus).
 Then run the following commands to index the main genome and virus
 genomes:
+
 For human data:
-STAR --runThreadN 8 --genomeChrBinNbits 14 --runMode
-genomeGenerate --genomeDir hg38_star_dir --genomeFastaFiles hg38.fa
---sjdbGTFfile hg38_gtf.gtf
-STAR --runThreadN 1 --runMode genomeGenerate
---genomeSAindexNbases 7 --genomeDir hg38_virus_dir
---genomeFastaFiles virus_masked_hg38.fa
+```javascript
+STAR --runThreadN 8 --genomeChrBinNbits 14 --runMode genomeGenerate --genomeDir hg38_star_dir --genomeFastaFiles hg38.fa --sjdbGTFfile hg38_gtf.gtf
+STAR --runThreadN 1 --runMode genomeGenerate --genomeSAindexNbases 7 --genomeDir hg38_virus_dir --genomeFastaFiles virus_masked_hg38.fa
+```
+
 For mouse data:
-STAR --runThreadN 8 --genomeChrBinNbits 14 --runMode
-genomeGenerate --genomeDir mm10_star_dir --genomeFastaFiles
-mm10.fa --sjdbGTFfile mm10_gtf.gtf
-STAR --runThreadN 1 --runMode genomeGenerate
---genomeSAindexNbases 7 --genomeDir mm10_virus_dir
---genomeFastaFiles virus_masked_mm10.fa
+```javascript
+STAR --runThreadN 8 --genomeChrBinNbits 14 --runMode genomeGenerate --genomeDir mm10_star_dir --genomeFastaFiles mm10.fa --sjdbGTFfile mm10_gtf.gtf
+STAR --runThreadN 1 --runMode genomeGenerate --genomeSAindexNbases 7 --genomeDir mm10_virus_dir --genomeFastaFiles virus_masked_mm10.fa
+```
 
 Run workflow with command line
 
@@ -55,12 +53,9 @@ sh files, and jar files from the virdetect github. Then, run the following comma
 If a line has cpus:x and mem:y as a comment, that indicates to submit that job with x threads and y
 gigs of memory requested.
 For human data the workflow is:
-STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn
-<input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat
---outFilterMultimapNmax 1000 --outSAMunmapped Within
---outFileNamePrefix <output_dir>/STAR_ #cpus:16 mem:2
-sh awk_column3_star.sh <output_dir>/STAR_Aligned.out.sam >
-<output_dir>/unaligned.sam
+```javascript
+STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat --outFilterMultimapNmax 1000 --outSAMunmapped Within --outFileNamePrefix <output_dir>/STAR_ #cpus:16 mem:2
+sh awk_column3_star.sh <output_dir>/STAR_Aligned.out.sam > <output_dir>/unaligned.sam
 sh awk_unalignedfq_1.sh
 <output_dir>/unaligned.sam > <output_dir>/unaligned_1.fastq && sh
 awk_unalignedfq_2.sh <output_dir>/unaligned.sam >
@@ -75,7 +70,10 @@ java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments
 <output_dir>/viralReadCounts.txt #mem:8
 ls -l <output_dir> > <output_dir>/fileSizes.txt
 rm -rfv $outdir/working/* # cleanup
+```
+
 For mouse data the workflow is:
+```javascript
 STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn
 <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat
 --outFilterMultimapNmax 1000 --outSAMunmapped Within
@@ -96,6 +94,7 @@ $sample_name <output_dir>/STAR_virus_Aligned.out.sam
 <output_dir>/viralReadCounts.txt #mem:8
 ls -l <output_dir> > <output_dir>fileSizes.txt
 rm -rfv $outdir/working/* # cleanup
+```
 
 Visualization
 
