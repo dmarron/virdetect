@@ -57,7 +57,7 @@ STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn <input_R1.fastq.gz>
 sh awk_column3_star.sh STAR_Aligned.out.sam > unaligned.sam
 sh awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam > unaligned_2.fastq
 STAR --genomeDir hg38_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
-java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
+java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
 #remove intermediate files other than viralReadCounts.txt and STAR_virus_Aligned.out.sam to clean up
 ```
 
@@ -65,10 +65,10 @@ java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_na
 ```javascript
 STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn <input_R1.fastq.gz> <input_R2.fastq.gz> --readFilesCommand zcat --outFilterMultimapNmax 1000 --outSAMunmapped Within --outFileNamePrefix <output_dir>/STAR_ #16 cpus, 32 G memory
 sh awk_column3_star.sh <output_dir>/STAR_Aligned.out.sam > unaligned.sam
-sh /home/dmarron/workspace/scripts/awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam >
+sh awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam >
 unaligned_2.fastq
 STAR --genomeDir mm10_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
-java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
+java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
 #remove intermediate files other than viralReadCounts.txt and STAR_virus_Aligned.out.sam to clean up
 ```
 
@@ -105,6 +105,6 @@ used with virdetect.
 
 After the virdetect workflow is complete, it is possible to run BLAST on a representative subset of the virus reads.  The following script will select up to four reads of maximal genomic distance from each virus strain and run BLAST on each one of them.  To do this, download and install BLAST from ncbi, then run the following commands:
 ```javascript
-java -Xmx8G -cp picard-1.92.jar:sam-1.92.jar:printBlastViralReads STAR_virus_Aligned.out.sam output_dir > blast_commands.sh
+java -Xmx8G -cp picard-1.92.jar:sam-1.92.jar:. printBlastViralReads STAR_virus_Aligned.out.sam output_dir > blast_commands.sh
 sh blast_commands.sh
 ```
