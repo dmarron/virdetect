@@ -45,7 +45,7 @@ STAR --runThreadN 8 --genomeChrBinNbits 14 --runMode genomeGenerate --genomeDir 
 STAR --runThreadN 1 --runMode genomeGenerate --genomeSAindexNbases 7 --genomeDir mm10_virus_dir --genomeFastaFiles virus_masked_mm10.fa
 ```
 
-Run workflow with command line
+## Run workflow with command line
 
 After the genomes are indexed with STAR, the virdetect workflow is ready
 to be run. To run virdetect from the command line, download all java files,
