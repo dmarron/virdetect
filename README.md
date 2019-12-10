@@ -103,7 +103,7 @@ used with virdetect.
 
 ## BLAST
 
-After the virdetect workflow is complete, it is possible to run BLAST on a representative subset of the virus reads.  The following script will select up to four reads from each virus strain that are aligned to different places and run BLAST on each one of them.  To do this, download and install BLAST from ncbi, then run the following commands:
+After the virdetect workflow is complete, it is possible to run BLAST on a representative subset of the virus reads.  The following script will select up to four reads of maximal genomic distance from each virus strain and run BLAST on each one of them.  To do this, download and install BLAST from ncbi, then run the following commands:
 ```javascript
 java -Xmx8G -cp picard-1.92.jar:sam-1.92.jar:printBlastViralReads STAR_virus_Aligned.out.sam output_dir > blast_commands.sh
 sh blast_commands.sh
