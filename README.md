@@ -76,7 +76,7 @@ java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. countStarViralAlignments <sample_
 
 After running virdetect, it may be of interest to visualize coverage of specific
 viruses. To run the visualization, download makeRTable.java, plotTable.R,
-and the jar files from the virdetect github. The run the commands:
+and the jar files from the virdetect github. The run the commands in the virdetect output folder:
 ```javascript
 java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. makeRTable virus_name STAR_virus.Aligned.out.bam viralRTable.txt
 Rscript plotTable.R viralRTable.txt
