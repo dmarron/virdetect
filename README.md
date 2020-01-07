@@ -94,7 +94,7 @@ genome fa (custom_virus.fa) for human data, run the following commands:
 java -Xmx4G -cp simulateReads.jar simulateReads custom_virus.fa sim.fastq
 STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn sim.fastq --outFilterMismatchNmax 5 --outFilterMultimapNmax 1080 --outFileNamePrefix STAR_
 java -Xmx4G -cp makeAlignedBed.jar makeAlignedBed STAR_Aligned.out.sam aligned.bed
-java -Xmx4G -cp maskGenome.jar maskGenome custom_virus.fa aligned.bed custom_masked_virus.fa
+java -Xmx4G -cp maskGenome.jar maskGenome aligned.bed custom_virus.fa custom_masked_virus.fa
 ```
 The resulting file, custom_masked_virus.fa, contains the masked genome
 that can then be indexed with STAR (with command from section 2) and
