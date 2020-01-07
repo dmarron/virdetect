@@ -15,19 +15,16 @@ import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMFileReader.ValidationStringency;
 
-public class makeVirusRTableHPVAllele {
+public class makeRTable {
     public static void main(String[] args) {
 	String sampleID = "sampleID";
 	String inputFile = "";
 	String outFile = "";
-	if (args.length == 0) {
-	    inputFile = "STAR_virus_Aligned.out.sam";
-	    outFile = "viralRTable.txt";
-	} else {
-	    sampleID = args[0];
-	    inputFile = args[1];
-	    outFile = args[2];
-	}
+	String virus_name = "";
+	sampleID = args[0];
+	virus_name = args[1];
+	inputFile = args[2];
+	outFile = args[3];
 	//LinkedHashMap<String,Integer> genomeCounts = new LinkedHashMap<String,Integer>();
 	LinkedHashMap<String,ArrayList<Integer>> strainCov = new LinkedHashMap<String,ArrayList<Integer>>();
 	LinkedHashMap<String,ArrayList<String>> strainAllele = new LinkedHashMap<String,ArrayList<String>>();
@@ -38,8 +35,7 @@ public class makeVirusRTableHPVAllele {
 	    List<SAMSequenceRecord> allSequences = inputBam.getFileHeader().getSequenceDictionary().getSequences();
 	    for (int i = 0; i < allSequences.size(); i++) {
 		String seqName = allSequences.get(i).getSequenceName();
-		boolean HPVonly = true;
-		if (!HPVonly || seqName.indexOf("Human_herpesvirus_4_complete_wild_type_genome") != -1) {
+		if (seqName.indexOf(virus_name) != -1) {
 		    strainCov.put(allSequences.get(i).getSequenceName(),new ArrayList<Integer>());
 		    strainAllele.put(allSequences.get(i).getSequenceName(),new ArrayList<String>());
 		}
@@ -91,8 +87,10 @@ public class makeVirusRTableHPVAllele {
 	    for (String key : strainCov.keySet()) {
 		ArrayList<Integer> cov = strainCov.get(key);
 		ArrayList<String> alle = strainAllele.get(key);
-		for (int a = 0; a < cov.size(); a++) {
-		    tabValues = (a+1) + "\t" + cov.get(a) + "\t" + alle.get(a) + "\t" + sampleID + "\t" + key;
+		//for (int a = 0; a < cov.size(); a++) {
+		for (int a = 1; a < cov.size(); a++) {
+		    //tabValues = (a+1) + "\t" + cov.get(a) + "\t" + alle.get(a) + "\t" + sampleID + "\t" + key;
+		    tabValues = a + "\t" + cov.get(a) + "\t" + alle.get(a) + "\t" + sampleID + "\t" + key;
 		    out.write(tabValues);
 		    out.newLine();
 		}

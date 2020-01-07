@@ -1,0 +1,2 @@
+To compile java files from source, include the picard 1.92 and sam 1.92 jars as follows:
+javac -J-Xms256m -J-Xmx256m -cp picard-1.92.jar:sam-1.92.jar:. <file.java>
