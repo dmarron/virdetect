@@ -13,13 +13,13 @@
 
 The files needed for the virdetect workflow can be downloaded from
 GitHub at https://github.com/dmarron/virdetect.
-The workflow can be run as several command line steps
+The workflow can be run as several command line steps.
 Before the workflow can be run, the appropriate genome files (.fa) will need
 to be downloaded and then indexed with the STAR aligner
 (https://github.com/alexdobin/STAR). For human data, download
-hg38_noEBV.fa and virus_masked_hg38.fa from the virdetect github. For
+hg38_noEBV.fa and virus_masked_hg38.fa from the virdetect github reference folder. For
 mouse data, download mm10.fa from UCSC or ensembl and download
-virus_masked_mm10.fa from the virdetect github. For the commands to
+virus_masked_mm10.fa from the virdetect github reference folder. For the commands to
 index this genomes with STAR, see Section 2.
 
 ## Index Genomes with STAR
@@ -48,8 +48,8 @@ STAR --runThreadN 1 --runMode genomeGenerate --genomeSAindexNbases 7 --genomeDir
 ## Run workflow with command line
 
 After the genomes are indexed with STAR, the virdetect workflow is ready
-to be run. To run virdetect from the command line, download all java files,
-sh files, and jar files from the virdetect github. Then, run the following command line steps.
+to be run. To run virdetect from the command line, download all jar files from the java folder
+and sh files from the scripts folder in the virdetect github. Then, run the following command line steps.
 
 ### For human data the workflow is:
 ```javascript
@@ -75,13 +75,13 @@ java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. countStarViralAlignments <sample_
 ## Visualization
 
 After running virdetect, it may be of interest to visualize coverage of specific
-viruses. To run the visualization, download makeRTable.java, plotTable.R,
-and the jar files from the virdetect github. The run the commands in the virdetect output folder:
+viruses. To run the visualization, download the jar files from the java folder and run the following command
+to make a table that is plottable in R:
 ```javascript
 java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. makeRTable virus_name STAR_virus.Aligned.out.bam viralRTable.txt
-Rscript plotTable.R viralRTable.txt
 ```
-Those commands will plot the coverage of the virus strain given by the
+Then, use R to run the commands in plotTable.R in the scripts folder on the produced viralRTable.txt.
+These commands will plot the coverage of the virus strain given by the
 parameter virus_name.
 
 ## Masking custom genomes
@@ -89,7 +89,7 @@ parameter virus_name.
 It may be of interest to run virdetect with custom virus strains rather than
 the ones provided in virus_masked_hg38.fa and virus_masked_mm10.fa.
 To do so, download simulateReads.java, makeAlignedBed.java and
-maskGenome.java from the virdetect github. To mask your custom
+maskGenome.java from the java folder. To mask your custom
 genome fa (custom_virus.fa) for human data, run the following commands:
 ```javascript
 java simulateReads custom_virus.fa sim.fastq
