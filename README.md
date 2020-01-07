@@ -78,11 +78,12 @@ After running virdetect, it may be of interest to visualize coverage of specific
 viruses. To run the visualization, download the jar files from the java folder and run the following command
 to make a table that is plottable in R:
 ```javascript
-java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. makeRTable virus_name STAR_virus.Aligned.out.bam viralRTable.txt
+java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. makeRTable <sample_name> <virus_name> STAR_virus.Aligned.out.sam viralRTable.txt
 ```
 Then, use R to run the commands in plotTable.R in the scripts folder on the produced viralRTable.txt.
 These commands will plot the coverage of the virus strain given by the
-parameter virus_name.
+parameter <virus_name>.  Make sure that the <sample_name> parameter is the same as was used for 
+the countStarViralAlignments step above.
 
 ## Masking custom genomes
 
