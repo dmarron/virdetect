@@ -57,7 +57,7 @@ STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn <input_R1.fastq.gz>
 sh awk_column3_star.sh STAR_Aligned.out.sam > unaligned.sam
 sh awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam > unaligned_2.fastq
 STAR --genomeDir hg38_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
-java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
+java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments.jar countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
 #remove intermediate files other than viralReadCounts.txt and STAR_virus_Aligned.out.sam to clean up
 ```
 
@@ -68,7 +68,7 @@ sh awk_column3_star.sh <output_dir>/STAR_Aligned.out.sam > unaligned.sam
 sh awk_unalignedfq_1.sh unaligned.sam > unaligned_1.fastq && sh awk_unalignedfq_2.sh unaligned.sam >
 unaligned_2.fastq
 STAR --genomeDir mm10_virus_dir --readFilesIn unaligned_1.fastq unaligned_2.fastq --runThreadN 16 --outFilterMismatchNmax 4 --outFilterMultimapNmax 1000 --limitOutSAMoneReadBytes 1000000 --outFileNamePrefix STAR_virus_ # 16 cpus, 32 G memory
-java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:. countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
+java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:countStarViralAlignments.jar countStarViralAlignments <sample_name> STAR_virus_Aligned.out.sam viralReadCounts.txt # 8 G memory
 #remove intermediate files other than viralReadCounts.txt and STAR_virus_Aligned.out.sam to clean up
 ```
 
@@ -81,9 +81,7 @@ to make a table that is plottable in R:
 java -Xmx4G -cp picard-1.92.jar:sam-1.92.jar:makeRTable.jar makeRTable <sample_name> <virus_name> STAR_virus.Aligned.out.sam viralRTable.txt
 ```
 Then, use R to run the commands in plotTable.R in the scripts folder on the produced viralRTable.txt.
-These commands will plot the coverage of the virus strain given by the
-parameter <virus_name>.  Make sure that the <sample_name> parameter is the same as was used for 
-the countStarViralAlignments step above.
+These commands will plot the coverage of the virus strain given by the parameter <virus_name>.
 
 ## Masking custom genomes
 
@@ -93,10 +91,10 @@ To do so, download simulateReads.java, makeAlignedBed.java and
 maskGenome.java from the java folder. To mask your custom
 genome fa (custom_virus.fa) for human data, run the following commands:
 ```javascript
-java simulateReads custom_virus.fa sim.fastq
+java -Xmx4G -cp simulateReads.jar simulateReads custom_virus.fa sim.fastq
 STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn sim.fastq --outFilterMismatchNmax 5 --outFilterMultimapNmax 1080 --outFileNamePrefix STAR_
-java makeAlignedBed STAR_Aligned.out.sam aligned.bed
-java maskGenome custom_virus.fa aligned.bed custom_masked_virus.fa
+java -Xmx4G -cp makeAlignedBed.jar makeAlignedBed STAR_Aligned.out.sam aligned.bed
+java -Xmx4G -cp maskGenome.jar maskGenome custom_virus.fa aligned.bed custom_masked_virus.fa
 ```
 The resulting file, custom_masked_virus.fa, contains the masked genome
 that can then be indexed with STAR (with command from section 2) and
