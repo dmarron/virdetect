@@ -8,9 +8,10 @@ public class maskGenome {
     public static int prob;
     public static void main(String[] args) {
 	//mask genome based on bed file
-	if (args.length != 3) {
-	    System.out.println("Error with command line arguments");
-	    System.out.println("example: java maskGenome unaligned.bed virus.fa output.fa");
+	if (args.length != 3 && args.length != 4) {
+	    System.out.println("Usage: java maskGenome unaligned.bed virus.fa output.fa");
+	    System.out.println("Optional fourth parameter read length (default 75):");
+	    System.out.println("java maskGenome unaligned.bed virus.fa output.fa 100");
 	    System.exit(0);
 	}
 	
@@ -20,7 +21,10 @@ public class maskGenome {
 	    BufferedReader bedReader = new BufferedReader(new FileReader(new File(args[0])));
 	    BufferedReader faReader = new BufferedReader(new FileReader(new File(args[1])));
 	    BufferedWriter out1 = new BufferedWriter(new FileWriter(new File(args[2])));
-	    readlength = 50;
+	    readlength = 75;
+	    if (args.length == 4) {
+		readlength = Integer.parseInt(args[3]);
+	    }
 	    String line;
 	    String previousLine = "";
 
@@ -53,63 +57,77 @@ public class maskGenome {
 		}
 	    }
 	    String strain = "";
+	    String seq = "";
 	    while (true) {
 		line = faReader.readLine();
 		if (line == null) {
-		    break;
-		}
-		if (line.indexOf(">") != 0) {
 		    if (bedMap.containsKey(strain)) {
 			ArrayList<Integer> myList = bedMap.get(strain);
-			//System.out.println(strain);
-			//System.out.println(line.length());
 			for (int i = 0; i < myList.size(); i++) {
 			    int maskStart = myList.get(i);
-			    if (maskStart + 50 < line.length()) {
-				line = line.substring(0,maskStart) + "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN" + line.substring(maskStart + 50);
-			    } else if (maskStart < line.length()) {
-				//System.out.println(line);
-				//System.out.println(line.length());
-				//System.out.println(maskStart);
-				//int diff = maskStart + 50 - line.length();
-				//System.out.println(diff);
-				//String addN = "";
-				//for (int n = 0; n < diff; n++) {
-				//    addN += 'N';
-				//}
-				line = line.substring(0,maskStart);
+			    if (maskStart + readlength < seq.length()) {
+				String addN = "";
+				for (int n = 0; n < readlength; n++) {
+				    addN += 'N';
+				}
+				seq = seq.substring(0,maskStart) + addN + seq.substring(maskStart + readlength);
+			    } else if (maskStart < seq.length()) {
+				seq = seq.substring(0,maskStart);
 			    }
 			}
 			double ncount = 0;
 			double count = 0;
-			for (int i = 0; i < line.length(); i++) {
-			    if (line.charAt(i) == 'N') {
+			for (int i = 0; i < seq.length(); i++) {
+			    if (seq.charAt(i) == 'N') {
 				ncount++;
 			    } else {
 				count ++;
 			    }
 			}
 			System.out.println(strain + " is " + ncount*100/(count + ncount) + "% masked");
-			//System.out.println(line);
-			//System.out.println(line.length());
-			out1.write(line);
+			out1.write(seq);
 			out1.newLine();
 		    } else {
-			out1.write(line);
+			out1.write(seq);
                         out1.newLine();
 		    }
+		    break;
+		}
+		if (line.indexOf(">") != 0) {
+		    seq = seq + line;
                 } else {
-		    if (line.indexOf("NC_") != -1 && line.length() > 1) {
-			strain = line.substring(1).split("NC_")[0] + "NC_" + line.split("NC_")[1].split("\\|")[0] + "|";
-
-			//strain = line.substring(1);
-
-			//strain = ">" + line.substring(1).split("NC_")[0] + "NC_" + line.split("NC_")[1].split("\\|")[0] + "|" + line.split("NC_")[1].split("\\|")[1];
-		    } else {
-			strain = line.substring(1);
-			//System.out.println(strain);
+		    if (bedMap.containsKey(strain)) {
+			ArrayList<Integer> myList = bedMap.get(strain);
+			for (int i = 0; i < myList.size(); i++) {
+			    int maskStart = myList.get(i);
+			    if (maskStart + readlength < seq.length()) {
+				String addN = "";
+				for (int n = 0; n < readlength; n++) {
+				    addN += 'N';
+				}
+				seq = seq.substring(0,maskStart) + addN + seq.substring(maskStart + readlength);
+			    } else if (maskStart < seq.length()) {
+				seq = seq.substring(0,maskStart);
+			    }
+			}
+			double ncount = 0;
+			double count = 0;
+			for (int i = 0; i < seq.length(); i++) {
+			    if (seq.charAt(i) == 'N') {
+				ncount++;
+			    } else {
+				count ++;
+			    }
+			}
+			System.out.println(strain + " is " + ncount*100/(count + ncount) + "% masked");
+			out1.write(seq);
+			out1.newLine();
+		    } else if (seq != "") {
+			out1.write(seq);
+                        out1.newLine();
 		    }
-		    //System.out.println(strain);
+		    seq = "";
+		    strain = line.substring(1);
 		    out1.write(line);
 		    out1.newLine();
 		}

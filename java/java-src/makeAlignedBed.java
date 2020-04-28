@@ -25,42 +25,14 @@ public class makeAlignedBed {
 	    faIn = args[2];
 	}
 
-	
-	//LinkedHashMap<String,ArrayList<Integer>> covered  = new LinkedHashMap<String,ArrayList<Integer>>();
-	//LinkedHashMap<String,String> covered  = new LinkedHashMap<String,String>();
-	//ArrayList<Integer> lengths = new ArrayList<Integer>();
-
 	try {
 	    BufferedWriter out = new BufferedWriter(new FileWriter(new File(outputFile)));
 	    BufferedReader inputBam = new BufferedReader(new FileReader(new File(inputFile)));
 	    BufferedReader inputFa = new BufferedReader(new FileReader(new File(faIn)));
-	    //SAMFileReader inputBam = new SAMFileReader(new File(inputFile));
-	    //inputBam.setValidationStringency(ValidationStringency.SILENT);
-	    //List<SAMSequenceRecord> allSequences = inputBam.getFileHeader().getSequenceDictionary().getSequences();
-	    //for (int i = 0; i < allSequences.size(); i++) {
-	    //genomeCounts.put(allSequences.get(i).getSequenceName(),0);
-	    //}
-	    //SAMRecordIterator iter = inputBam.iterator();
 	    String line = "";
 	    int count = 0;
-	    /*while ((line = inputFa.readLine()) != null) {
-		if (count % 2 == 1) {
-		    lengths.add(line.length());
-		}
-		count++;
-		}*/
 	    while ((line = inputBam.readLine()) != null) {
-		if (line.indexOf("@") == 0) {
-		    if (line.indexOf("@SQ") == 0) {
-			/*StringTokenizer sqToken = new StringTokenizer(line);
-			sqToken.nextToken();
-			String strain = sqToken.nextToken();
-			if (strain.indexOf("SN:") == 0) {
-			    strain = strain.substring(3);
-			}
-			covered.put(strain,"");*/
-		    }
-		} else {
+		if (line.indexOf("@") != 0) {
 		    StringTokenizer token = new StringTokenizer(line);
 		    String ID = token.nextToken();
 		    token.nextToken();
@@ -69,21 +41,18 @@ public class makeAlignedBed {
 		    if (ID.indexOf("|") != -1 && ID.indexOf(":") != -1) {
 			String[] pipeSplit = ID.split("\\|");
 			String readStrain = "";
-			for (int p = 0; p < 4; p++) {
-			    readStrain += pipeSplit[p] + "|";
+			for (int p = 0; p < pipeSplit.length; p++) {
+                            if (p < pipeSplit.length-1) {
+                                readStrain += pipeSplit[p] + "|";
+                            } else {
+                                readStrain += pipeSplit[p].split(":")[0];
+                            }
 			}
 			String[] colonSplit = ID.split(":");
 			String start = "";
 			if (colonSplit.length > 1) {
 			    start = colonSplit[colonSplit.length - 2];
 			}
-			/*if (readStrain.equals(samStrain)) {
-			    if (start.equals(samStart)) {
-				covered.put(readStrain,covered.get(readStrain) + start + ",");
-			    } else {
-			    }
-			    }*/
-			//System.out.println(readStrain + "," + start);
 			out.write(readStrain + "\t" + start + "\t" + start);
 			out.newLine();
 		    }

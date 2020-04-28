@@ -92,13 +92,15 @@ maskGenome.jar from the java folder and subLowComplex.pl from
 the scripts folder. To mask your custom genome fa (custom_virus.fa)
 for human data, run the following commands:
 ```javascript
+(Replace spaces with another character such as '|' in the custom genome)
+sed -i 's/ /|/g' custom_virus.fa
 java -Xmx4G -cp simulateReads.jar simulateReads custom_virus.fa sim.fastq
 STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn sim.fastq --outFilterMismatchNmax 5 --outFilterMultimapNmax 1080 --outFileNamePrefix STAR_
 perl subLowComplex.pl custom_virus.fa > virus_mask_1.fa
-java -Xmx4G -cp makeAlignedBed.jar makeAlignedBed STAR_Aligned.out.sam aligned.bed virus_mask_1.fa
+java -Xmx4G -cp makeAlignedBed.jar makeAlignedBed STAR_Aligned.out.sam aligned.bed
 java -Xmx4G -cp maskGenome.jar maskGenome aligned.bed virus_mask_1.fa custom_masked_virus.fa > mask_stats.txt
 ```
-Run the second command with --genomeDir mm10_star_dir instead for mouse data.
+Run the STAR command with --genomeDir mm10_star_dir instead for mouse data.
 The resulting file, custom_masked_virus.fa, contains the masked genome
 that can then be indexed with STAR (with command from section 2) and
 used with virdetect.
