@@ -87,15 +87,18 @@ These commands will plot the coverage of the virus strain given by the parameter
 
 It may be of interest to run virdetect with custom virus strains rather than
 the ones provided in virus_masked_hg38.fa and virus_masked_mm10.fa.
-To do so, download simulateReads.java, makeAlignedBed.java and
-maskGenome.java from the java folder. To mask your custom
-genome fa (custom_virus.fa) for human data, run the following commands:
+To do so, download simulateReads.jar, makeAlignedBed.jar and
+maskGenome.jar from the java folder and subLowComplex.pl from
+the scripts folder. To mask your custom genome fa (custom_virus.fa)
+for human data, run the following commands:
 ```javascript
 java -Xmx4G -cp simulateReads.jar simulateReads custom_virus.fa sim.fastq
-STAR --runThreadN 16 --genomeDir mm10_star_dir --readFilesIn sim.fastq --outFilterMismatchNmax 5 --outFilterMultimapNmax 1080 --outFileNamePrefix STAR_
-java -Xmx4G -cp makeAlignedBed.jar makeAlignedBed STAR_Aligned.out.sam aligned.bed custom_virus.fa
-java -Xmx4G -cp maskGenome.jar maskGenome aligned.bed custom_virus.fa custom_masked_virus.fa
+STAR --runThreadN 16 --genomeDir hg38_star_dir --readFilesIn sim.fastq --outFilterMismatchNmax 5 --outFilterMultimapNmax 1080 --outFileNamePrefix STAR_
+perl subLowComplex.pl custom_virus.fa > virus_mask_1.fa
+java -Xmx4G -cp makeAlignedBed.jar makeAlignedBed STAR_Aligned.out.sam aligned.bed virus_mask_1.fa
+java -Xmx4G -cp maskGenome.jar maskGenome aligned.bed virus_mask_1.fa custom_masked_virus.fa > mask_stats.txt
 ```
+Run the second command with --genomeDir mm10_star_dir instead for mouse data.
 The resulting file, custom_masked_virus.fa, contains the masked genome
 that can then be indexed with STAR (with command from section 2) and
 used with virdetect.
